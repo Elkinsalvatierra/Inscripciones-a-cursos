@@ -1,6 +1,5 @@
 import { useState } from "react";
-
-const CATEGORIAS = ["Tecnología", "Idiomas", "Arte y diseño", "Negocios", "Salud", "Otros"];
+import { CATEGORIAS } from "../data/categorias.js";
 
 const VALORES_INICIALES = {
   nombre: "",
@@ -100,8 +99,8 @@ function FormularioInscripcion({ onEnviar, enviando }) {
         <select name="categoria" value={valores.categoria} onChange={manejarCambio}>
           <option value="">-- Selecciona --</option>
           {CATEGORIAS.map((categoria) => (
-            <option key={categoria} value={categoria}>
-              {categoria}
+            <option key={categoria.nombre} value={categoria.nombre}>
+              {categoria.nombre}
             </option>
           ))}
         </select>
@@ -121,7 +120,7 @@ function FormularioInscripcion({ onEnviar, enviando }) {
         />
       </Campo>
 
-      <button type="submit" className="boton" disabled={enviando}>
+      <button type="submit" className="boton boton-ancho" disabled={enviando}>
         {enviando ? "Enviando..." : "Registrar inscripción"}
       </button>
     </form>

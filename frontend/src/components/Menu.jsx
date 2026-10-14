@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 // Menú de navegación reutilizable. NavLink marca la ruta activa con la clase "activo"
 function Menu() {
@@ -6,20 +6,26 @@ function Menu() {
 
   return (
     <header className="menu">
-      <NavLink to="/" className="marca">
-        Inscripciones a cursos
-      </NavLink>
-      <nav className="menu-enlaces">
-        <NavLink to="/" end className={claseEnlace}>
-          Inicio
-        </NavLink>
-        <NavLink to="/registro" className={claseEnlace}>
-          Registrar
-        </NavLink>
-        <NavLink to="/lista" className={claseEnlace}>
-          Inscripciones
-        </NavLink>
-      </nav>
+      <div className="menu-interno">
+        <Link to="/" className="marca">
+          inscribe<span>.</span>
+        </Link>
+        <nav className="menu-enlaces">
+          <NavLink to="/" end className={claseEnlace}>
+            Inicio
+          </NavLink>
+          <NavLink to="/lista" className={claseEnlace}>
+            Inscripciones
+          </NavLink>
+          {/* En celular reemplaza al botón "Inscribirme" */}
+          <NavLink to="/registro" className={(estado) => `${claseEnlace(estado)} solo-movil`}>
+            Registrar
+          </NavLink>
+        </nav>
+        <Link to="/registro" className="boton boton-borde boton-chico solo-escritorio">
+          Inscribirme
+        </Link>
+      </div>
     </header>
   );
 }

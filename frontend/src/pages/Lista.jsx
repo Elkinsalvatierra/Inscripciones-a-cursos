@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import TarjetaInscripcion from "../components/TarjetaInscripcion.jsx";
+import FiltroCategorias from "../components/FiltroCategorias.jsx";
 import Mensaje from "../components/Mensaje.jsx";
 import { obtenerInscripciones } from "../services/api.js";
 
@@ -9,6 +10,10 @@ function Lista() {
   const [inscripciones, setInscripciones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+
+  // La categoría elegida se guarda en la URL, por ejemplo /lista?categoria=Idiomas
+  const [parametros, setParametros] = useSearchParams();
+  const categoria = parametros.get("categoria") || "";
 
   async function cargar() {
     setCargando(true);
@@ -29,12 +34,27 @@ function Lista() {
     cargar();
   }, []);
 
+  function cambiarCategoria(nueva) {
+    setParametros(nueva ? { categoria: nueva } : {});
+  }
+
+  const visibles = categoria
+    ? inscripciones.filter((inscripcion) => inscripcion.categoria === categoria)
+    : inscripciones;
+
   return (
     <section>
-      <div className="lista-encabezado">
-        <h1>Inscripciones registradas</h1>
+      <div className="titulo-pagina titulo-con-acciones">
+        <div>
+          <h1>Inscripciones registradas</h1>
+          <p>
+            {cargando || error
+              ? "Consulta las inscripciones guardadas en el servidor."
+              : `${visibles.length} de ${inscripciones.length} inscripciones`}
+          </p>
+        </div>
         <div className="acciones">
-          <button type="button" className="boton boton-secundario" onClick={cargar} disabled={cargando}>
+          <button type="button" className="boton boton-borde" onClick={cargar} disabled={cargando}>
             Actualizar
           </button>
           <Link to="/registro" className="boton">
@@ -42,6 +62,8 @@ function Lista() {
           </Link>
         </div>
       </div>
+
+      <FiltroCategorias seleccionada={categoria} onCambiar={cambiarCategoria} />
 
       {cargando && <Mensaje tipo="carga">Cargando inscripciones...</Mensaje>}
 
@@ -53,9 +75,13 @@ function Lista() {
         </Mensaje>
       )}
 
-      {!cargando && !error && inscripciones.length > 0 && (
+      {!cargando && !error && inscripciones.length > 0 && visibles.length === 0 && (
+        <Mensaje tipo="info">No hay inscripciones en la categoría {categoria}.</Mensaje>
+      )}
+
+      {!cargando && !error && visibles.length > 0 && (
         <div className="grilla">
-          {inscripciones.map((inscripcion) => (
+          {visibles.map((inscripcion) => (
             <TarjetaInscripcion key={inscripcion.id} inscripcion={inscripcion} />
           ))}
         </div>

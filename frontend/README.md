@@ -29,10 +29,14 @@ src/
 ├── App.jsx               # Define las rutas
 ├── App.css               # Estilos (adaptables a móvil)
 ├── services/api.js       # fetch GET y POST a /registros
+├── data/categorias.js    # Lista de categorías con su color
 ├── components/
 │   ├── Menu.jsx                  # Barra de navegación
+│   ├── Pie.jsx                   # Pie de página
 │   ├── FormularioInscripcion.jsx # Estado del formulario y validaciones
 │   ├── TarjetaInscripcion.jsx    # Muestra una inscripción
+│   ├── FiltroCategorias.jsx      # Píldoras para filtrar /lista por categoría
+│   ├── IconoCategoria.jsx        # Ícono SVG de cada categoría
 │   └── Mensaje.jsx               # Mensajes de éxito, error, carga e info
 └── pages/
     ├── Inicio.jsx

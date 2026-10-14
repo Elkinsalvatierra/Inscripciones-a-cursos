@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Menu from "./components/Menu.jsx";
+import Pie from "./components/Pie.jsx";
 import Inicio from "./pages/Inicio.jsx";
 import Registro from "./pages/Registro.jsx";
 import Lista from "./pages/Lista.jsx";
@@ -18,6 +19,7 @@ function App() {
           <Route path="*" element={<NoEncontrado />} />
         </Routes>
       </main>
+      <Pie />
     </>
   );
 }

@@ -27,19 +27,35 @@ function Registro() {
 
   return (
     <section>
-      <h1>Nueva inscripción</h1>
+      <div className="titulo-pagina">
+        <h1>Nueva inscripción</h1>
+        <p>Completa tus datos y elige el curso. Todos los campos son obligatorios.</p>
+      </div>
 
-      {mensaje && (
-        <Mensaje tipo={mensaje.tipo}>
-          {mensaje.texto} {mensaje.tipo === "exito" && <Link to="/lista">Ver la lista</Link>}
-        </Mensaje>
-      )}
+      <div className="registro-columnas">
+        <div>
+          {mensaje && (
+            <Mensaje tipo={mensaje.tipo}>
+              {mensaje.texto} {mensaje.tipo === "exito" && <Link to="/lista">Ver la lista</Link>}
+            </Mensaje>
+          )}
 
-      <FormularioInscripcion onEnviar={registrar} enviando={enviando} />
+          <FormularioInscripcion onEnviar={registrar} enviando={enviando} />
+        </div>
 
-      <p className="volver">
-        <Link to="/lista">Ir a la lista de inscripciones</Link>
-      </p>
+        <aside className="tarjeta-destacada registro-ayuda">
+          <span className="sello">Antes de enviar</span>
+          <h2>Ten en cuenta</h2>
+          <ul>
+            <li>Usa un email válido, por ejemplo ana@gmail.com.</li>
+            <li>La fecha de inicio no puede ser anterior a hoy.</li>
+            <li>La descripción debe tener al menos 10 caracteres.</li>
+          </ul>
+          <Link to="/lista" className="enlace-claro">
+            Ver inscripciones →
+          </Link>
+        </aside>
+      </div>
     </section>
   );
 }
