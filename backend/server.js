@@ -1,3 +1,4 @@
+
 const express = require("express");
 const cors = require("cors");
 const fs = require("node:fs/promises");
@@ -5,12 +6,14 @@ const path = require("node:path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 const ARCHIVO_DATOS = path.join(__dirname, "data", "registros.json");
+const FRONTEND = path.join(__dirname, "../frontend/dist");
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(FRONTEND));
 
-// Validar que una fecha exista y tenga formato AAAA-MM-DD
 function validarFecha(fecha) {
   if (typeof fecha !== "string") {
     return false;
@@ -33,7 +36,6 @@ function validarFecha(fecha) {
   );
 }
 
-// Leer los registros almacenados
 async function leerRegistros() {
   try {
     const contenido = await fs.readFile(ARCHIVO_DATOS, "utf8");
@@ -58,7 +60,6 @@ async function leerRegistros() {
   }
 }
 
-// Guardar los registros en el archivo JSON
 async function guardarRegistros(registros) {
   await fs.writeFile(
     ARCHIVO_DATOS,
@@ -67,14 +68,6 @@ async function guardarRegistros(registros) {
   );
 }
 
-// Ruta principal
-app.get("/", (req, res) => {
-  res.json({
-    mensaje: "API de Inscripciones a cursos funcionando",
-  });
-});
-
-// GET: consultar todas las inscripciones
 app.get("/registros", async (req, res) => {
   try {
     const registros = await leerRegistros();
@@ -89,8 +82,6 @@ app.get("/registros", async (req, res) => {
   }
 });
 
-// POST: registrar una nueva inscripción
-// Se procesan los POST uno por uno para evitar IDs repetidos
 let colaRegistros = Promise.resolve();
 
 app.post("/registros", (req, res) => {
@@ -99,7 +90,6 @@ app.post("/registros", (req, res) => {
       const { nombre, email, descripcion, fecha, categoria, curso } =
         req.body || {};
 
-      // Validar campos obligatorios
       if (
         typeof nombre !== "string" ||
         !nombre.trim() ||
@@ -118,7 +108,6 @@ app.post("/registros", (req, res) => {
         });
       }
 
-      // Validar correo electrónico
       const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
         email.trim()
       );
@@ -129,7 +118,6 @@ app.post("/registros", (req, res) => {
         });
       }
 
-      // Validar fecha
       if (!validarFecha(fecha)) {
         return res.status(400).json({
           error: "La fecha debe ser válida y tener el formato AAAA-MM-DD.",
@@ -138,7 +126,6 @@ app.post("/registros", (req, res) => {
 
       const registros = await leerRegistros();
 
-      // Obtener el siguiente ID numérico
       const siguienteId =
         registros.reduce((maximo, registro) => {
           const id = registro.id;
@@ -154,7 +141,6 @@ app.post("/registros", (req, res) => {
         throw new Error("No se puede generar otro ID numérico.");
       }
 
-      // Crear la inscripción
       const nuevoRegistro = {
         id: siguienteId,
         nombre: nombre.trim(),
@@ -167,7 +153,6 @@ app.post("/registros", (req, res) => {
 
       registros.push(nuevoRegistro);
 
-      // Guardar en registros.json
       await guardarRegistros(registros);
 
       res.status(201).json({
@@ -186,7 +171,30 @@ app.post("/registros", (req, res) => {
   colaRegistros = colaRegistros.then(procesarRegistro, procesarRegistro);
 });
 
-// Iniciar servidor
+app.get("/{*ruta}", (req, res, next) => {
+  if (req.path.startsWith("/registros")) {
+    return next();
+  }
+
+  res.sendFile(path.join(FRONTEND, "index.html"), (error) => {
+    if (error) {
+      next(error);
+    }
+  });
+});
+
+app.use((error, req, res, next) => {
+  console.error("Error del servidor:", error);
+
+  if (req.path.startsWith("/registros")) {
+    return res.status(500).json({
+      error: "Error interno del servidor.",
+    });
+  }
+
+  res.status(500).send("No se pudo cargar la aplicación.");
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor iniciado en http://localhost:${PORT}`);
 });
