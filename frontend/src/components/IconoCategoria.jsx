@@ -5,12 +5,13 @@ const TRAZOS = {
   "Arte y diseño": "M15 5l4 4M4 20l4.5-1L19.5 8a2.8 2.8 0 00-4-4L4.5 15 4 20z",
   Negocios: "M4 19h16M7 16v-5m5 5V7m5 9v-3",
   Salud: "M12 20s-7-4.4-7-10a4 4 0 017-2.7A4 4 0 0119 10c0 5.6-7 10-7 10z",
-  Otros: "M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3V4zm0 13a3 3 0 013-3h11",
+  // Ícono genérico (libro) para categorías desconocidas
+  generico: "M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3V4zm0 13a3 3 0 013-3h11",
 };
 
 // Ícono reutilizable de una categoría
 function IconoCategoria({ categoria, tamano = 18 }) {
-  const trazo = TRAZOS[categoria] || TRAZOS.Otros;
+  const trazo = TRAZOS[categoria] || TRAZOS.generico;
 
   return (
     <svg width={tamano} height={tamano} viewBox="0 0 24 24" fill="none" stroke="currentColor"

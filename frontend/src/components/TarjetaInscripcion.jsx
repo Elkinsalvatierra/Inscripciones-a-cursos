@@ -22,7 +22,7 @@ function formatearFecha(fecha) {
 
 // Tarjeta reutilizable que muestra los datos de una inscripción
 function TarjetaInscripcion({ inscripcion }) {
-  const { id, nombre, email, descripcion, fecha, categoria, curso } = inscripcion;
+  const { id, nombre, email, descripcion, fecha, categoria, curso, telefono } = inscripcion;
   const { color } = buscarCategoria(categoria);
 
   return (
@@ -39,8 +39,10 @@ function TarjetaInscripcion({ inscripcion }) {
         <span className="tarjeta-categoria">{categoria}</span>
         <h3>{curso}</h3>
         <p className="tarjeta-descripcion">{descripcion}</p>
+
         <p className="tarjeta-participante">
           <strong>Participante:</strong> {nombre}
+          {telefono && <span className="tarjeta-telefono"> · {telefono}</span>}
         </p>
       </div>
 

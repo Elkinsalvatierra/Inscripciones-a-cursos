@@ -441,6 +441,10 @@ h3 {
   overflow: hidden;
 }
 
+.tarjeta-telefono {
+  color: var(--texto-suave);
+}
+
 .tarjeta-participante {
   margin: 0.35rem 0 0;
   padding-top: 0.7rem;
@@ -475,6 +479,76 @@ h3 {
   white-space: nowrap;
 }
 
+/* Variante compacta usada en Inicio */
+.tarjeta-compacta .tarjeta-arco {
+  height: 96px;
+}
+
+.tarjeta-compacta .arco {
+  inset: 14px 28px 0;
+}
+
+.tarjeta-compacta .avatar {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 10px;
+  border-width: 3px;
+}
+
+.tarjeta-compacta h3 {
+  font-size: 1.05rem;
+}
+
+/* El conteo queda siempre abajo para que todas las tarjetas se vean alineadas */
+.tarjeta-conteo {
+  margin-top: auto;
+  padding-top: 0.6rem;
+  color: var(--texto-suave);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* ---------- Cartillas de cursos ---------- */
+.volver-enlace {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.volver-enlace:hover {
+  color: var(--texto);
+}
+
+/* El fondo de color se ve mientras carga la imagen o si no carga */
+.curso-imagen {
+  aspect-ratio: 5 / 3;
+  background: linear-gradient(135deg, var(--arco-1), var(--arco-2));
+  overflow: hidden;
+}
+
+.curso-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s;
+}
+
+.tarjeta-curso:hover .curso-imagen img {
+  transform: scale(1.04);
+}
+
+.curso-boton {
+  margin-top: auto;
+}
+
+.tarjeta-curso .tarjeta-descripcion {
+  margin-bottom: 0.9rem;
+}
+
 /* Colores de cada categoría */
 .color-azul { --arco-1: #7dd3fc; --arco-2: #3b82f6; --arco-texto: #1d4ed8; }
 .color-ambar { --arco-1: #fde68a; --arco-2: #f59e0b; --arco-texto: #b45309; }
@@ -506,10 +580,57 @@ h3 {
   background: #fff;
 }
 
-/* Descripción y botón ocupan todo el ancho */
-.formulario .campo:has(textarea),
+/* Resumen del curso y botón ocupan todo el ancho */
+.formulario .curso-resumen,
 .formulario .boton {
   grid-column: 1 / -1;
+}
+
+/* Curso elegido (solo lectura) */
+.curso-resumen {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  background: var(--fondo-suave);
+}
+
+.curso-resumen img {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: cover;
+  background: linear-gradient(135deg, var(--arco-1), var(--arco-2));
+}
+
+.curso-resumen div {
+  flex: 1;
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.curso-resumen strong {
+  font-size: 1.05rem;
+}
+
+.curso-resumen small {
+  color: var(--texto-suave);
+  font-size: 0.8rem;
+}
+
+.curso-cambiar {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.curso-cambiar:hover {
+  text-decoration: underline;
 }
 
 .campo {

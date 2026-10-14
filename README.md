@@ -53,7 +53,9 @@ para registrar una nueva inscripcion utilizamos la ruta `POST/registro`, esta ru
   `"descripcion": "Inscripcion al curso de bases de datos",`
   `"fecha": "2026-10-14",`
   `"categoria": "Tecnologia",`
-  `"curso": "SQL Server"`
+  `"curso": "SQL Server",`
+  `"cedula": "0912345675",`
+  `"telefono": "0991234567"`
 `}`
 
 Para probar esta ruta desde PowerShell, con el servidor encendido, ejecutamos:
@@ -64,6 +66,8 @@ Para probar esta ruta desde PowerShell, con el servidor encendido, ejecutamos:
    `fecha = "2026-10-14"`
    `categoria = "Tecnologia"`
    `curso = "SQL Server"`
+   `cedula = "0912345675"`
+   `telefono = "0991234567"`
 `} | ConvertTo-Json`
 
 `Invoke-RestMethod -Uri "http://localhost:3000/registros" -Method POST -ContentType "application/json" -Body $datos`
@@ -80,6 +84,10 @@ El servidor realiza las siguientes validaciones antes de guardar una inscripció
 -Verifica que el correo electrónico tenga un formato válido.
 
 -Comprueba que la fecha tenga el formato AAAA-MM-DD y exista en el calendario.
+
+-Verifica que la cédula sea ecuatoriana válida (10 dígitos, provincia 01-24 y dígito verificador).
+
+-Verifica que el teléfono tenga 10 dígitos y empiece con 0.
 
 Si los datos son incorrectos, devuelve el código HTTP 400 con un mensaje de error.
 

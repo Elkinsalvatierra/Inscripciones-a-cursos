@@ -10,6 +10,8 @@ const ARCHIVO_DATOS = path.join(__dirname, "data", "registros.json");
 app.use(cors());
 app.use(express.json());
 
+// ---------- Validaciones ----------
+
 // Validar que una fecha exista y tenga formato AAAA-MM-DD
 function validarFecha(fecha) {
   if (typeof fecha !== "string") {
@@ -33,6 +35,47 @@ function validarFecha(fecha) {
   );
 }
 
+// Fecha de hoy en formato AAAA-MM-DD (hora local del servidor)
+function fechaHoy() {
+  const hoy = new Date();
+  hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset());
+  return hoy.toISOString().slice(0, 10);
+}
+
+// Validar una cédula ecuatoriana: 10 dígitos, provincia 01-24 y dígito verificador (módulo 10)
+function validarCedula(cedula) {
+  if (typeof cedula !== "string" || !/^\d{10}$/.test(cedula)) {
+    return false;
+  }
+
+  const provincia = Number(cedula.slice(0, 2));
+
+  if (provincia < 1 || provincia > 24 || Number(cedula[2]) > 5) {
+    return false;
+  }
+
+  let suma = 0;
+
+  for (let i = 0; i < 9; i++) {
+    let valor = Number(cedula[i]) * (i % 2 === 0 ? 2 : 1);
+
+    if (valor > 9) {
+      valor -= 9;
+    }
+
+    suma += valor;
+  }
+
+  return (10 - (suma % 10)) % 10 === Number(cedula[9]);
+}
+
+// Validar un teléfono de 10 dígitos que empiece con 0
+function validarTelefono(telefono) {
+  return typeof telefono === "string" && /^0\d{9}$/.test(telefono);
+}
+
+// ---------- Lectura y escritura del archivo JSON ----------
+
 // Leer los registros almacenados
 async function leerRegistros() {
   try {
@@ -45,6 +88,7 @@ async function leerRegistros() {
 
     return registros;
   } catch (error) {
+    // Si el archivo no existe, se crea con una lista vacía
     if (error.code === "ENOENT") {
       await fs.mkdir(path.dirname(ARCHIVO_DATOS), {
         recursive: true,
@@ -66,6 +110,8 @@ async function guardarRegistros(registros) {
     "utf8"
   );
 }
+
+// ---------- Rutas ----------
 
 // Ruta principal
 app.get("/", (req, res) => {
@@ -96,8 +142,16 @@ let colaRegistros = Promise.resolve();
 app.post("/registros", (req, res) => {
   const procesarRegistro = async () => {
     try {
-      const { nombre, email, descripcion, fecha, categoria, curso } =
-        req.body || {};
+      const {
+        nombre,
+        email,
+        descripcion,
+        fecha,
+        categoria,
+        curso,
+        cedula,
+        telefono,
+      } = req.body || {};
 
       // Validar campos obligatorios
       if (
@@ -111,7 +165,9 @@ app.post("/registros", (req, res) => {
         !categoria.trim() ||
         typeof curso !== "string" ||
         !curso.trim() ||
-        !fecha
+        !fecha ||
+        !cedula ||
+        !telefono
       ) {
         return res.status(400).json({
           error: "Todos los campos son obligatorios.",
@@ -133,6 +189,27 @@ app.post("/registros", (req, res) => {
       if (!validarFecha(fecha)) {
         return res.status(400).json({
           error: "La fecha debe ser válida y tener el formato AAAA-MM-DD.",
+        });
+      }
+
+      // No se puede inscribir a un curso con fecha de inicio pasada
+      if (fecha < fechaHoy()) {
+        return res.status(400).json({
+          error: "La fecha de inicio no puede ser anterior a hoy.",
+        });
+      }
+
+      // Validar cédula
+      if (!validarCedula(cedula)) {
+        return res.status(400).json({
+          error: "La cédula debe ser una cédula ecuatoriana válida de 10 dígitos.",
+        });
+      }
+
+      // Validar teléfono
+      if (!validarTelefono(telefono)) {
+        return res.status(400).json({
+          error: "El teléfono debe tener 10 dígitos y empezar con 0.",
         });
       }
 
@@ -163,11 +240,13 @@ app.post("/registros", (req, res) => {
         fecha,
         categoria: categoria.trim(),
         curso: curso.trim(),
+        cedula,
+        telefono,
       };
 
       registros.push(nuevoRegistro);
 
-      // Guardar en registros.json
+      // Guardar en registros.json sin perder los anteriores
       await guardarRegistros(registros);
 
       res.status(201).json({
@@ -184,6 +263,23 @@ app.post("/registros", (req, res) => {
   };
 
   colaRegistros = colaRegistros.then(procesarRegistro, procesarRegistro);
+});
+
+// ---------- Manejo de errores ----------
+
+// Si el cuerpo de la petición no es un JSON válido, responder 400 en JSON
+app.use((error, req, res, next) => {
+  if (error.type === "entity.parse.failed") {
+    return res.status(400).json({
+      error: "El cuerpo de la petición no es un JSON válido.",
+    });
+  }
+
+  console.error("Error inesperado:", error);
+
+  res.status(500).json({
+    error: "Ocurrió un error en el servidor.",
+  });
 });
 
 // Iniciar servidor
