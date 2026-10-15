@@ -1,1 +1,47 @@
-[]
+[
+  {
+    "id": 1,
+    "nombre": "jean",
+    "email": "jsuareza11@unemi.edu.ec",
+    "descripcion": "curso intensivo de sql server",
+    "fecha": "2026-10-14",
+    "categoria": "Tecnología",
+    "curso": "sql server"
+  },
+  {
+    "id": 2,
+    "nombre": "Ana Martinez",
+    "email": "jsuareza11@unemi.edu.ec",
+    "descripcion": "conocimiento en base de datos",
+    "fecha": "2026-10-14",
+    "categoria": "Tecnología",
+    "curso": "SQL Server"
+  },
+  {
+    "id": 3,
+    "nombre": "pepe juan",
+    "email": "anailla@gmail.com",
+    "descripcion": "quisiera aprender python desde cero",
+    "fecha": "2026-10-14",
+    "categoria": "Tecnología",
+    "curso": "Python desde cero"
+  },
+  {
+    "id": 4,
+    "nombre": "JEAN CARLOS SUAREZ ACEVEDO",
+    "email": "jeanpp@gmail.com",
+    "descripcion": "Aprende lógica de programación con el lenguaje más usado.",
+    "fecha": "2026-10-14",
+    "categoria": "Tecnología",
+    "curso": "Python desde cero"
+  },
+  {
+    "id": 5,
+    "nombre": "juan frank",
+    "email": "juanpp.@gmail.com",
+    "descripcion": "Mejora tu conversación, lectura y escritura.",
+    "fecha": "2026-10-14",
+    "categoria": "Idiomas",
+    "curso": "Inglés intermedio"
+  }
+]
