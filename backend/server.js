@@ -5,10 +5,14 @@ const path = require("node:path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 const ARCHIVO_DATOS = path.join(__dirname, "data", "registros.json");
+// Carpeta con el frontend compilado (npm run build dentro de frontend)
+const FRONTEND = path.join(__dirname, "../frontend/dist");
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(FRONTEND));
 
 // ---------- Validaciones ----------
 
@@ -111,14 +115,7 @@ async function guardarRegistros(registros) {
   );
 }
 
-// ---------- Rutas ----------
-
-// Ruta principal
-app.get("/", (req, res) => {
-  res.json({
-    mensaje: "API de Inscripciones a cursos funcionando",
-  });
-});
+// ---------- Rutas de la API ----------
 
 // GET: consultar todas las inscripciones
 app.get("/registros", async (req, res) => {
@@ -215,7 +212,7 @@ app.post("/registros", (req, res) => {
 
       const registros = await leerRegistros();
 
-      // Obtener el siguiente ID numérico
+      // Obtener el siguiente ID numérico: el mayor ID existente + 1
       const siguienteId =
         registros.reduce((maximo, registro) => {
           const id = registro.id;
@@ -265,21 +262,40 @@ app.post("/registros", (req, res) => {
   colaRegistros = colaRegistros.then(procesarRegistro, procesarRegistro);
 });
 
+// ---------- Frontend ----------
+
+// Cualquier otra ruta (/, /lista, /registro...) devuelve la app de React
+app.get("/{*ruta}", (req, res, next) => {
+  if (req.path.startsWith("/registros")) {
+    return next();
+  }
+
+  res.sendFile(path.join(FRONTEND, "index.html"), (error) => {
+    if (error) {
+      next(error);
+    }
+  });
+});
+
 // ---------- Manejo de errores ----------
 
-// Si el cuerpo de la petición no es un JSON válido, responder 400 en JSON
 app.use((error, req, res, next) => {
+  // Si el cuerpo de la petición no es un JSON válido, responder 400 en JSON
   if (error.type === "entity.parse.failed") {
     return res.status(400).json({
       error: "El cuerpo de la petición no es un JSON válido.",
     });
   }
 
-  console.error("Error inesperado:", error);
+  console.error("Error del servidor:", error);
 
-  res.status(500).json({
-    error: "Ocurrió un error en el servidor.",
-  });
+  if (req.path.startsWith("/registros")) {
+    return res.status(500).json({
+      error: "Error interno del servidor.",
+    });
+  }
+
+  res.status(500).send("No se pudo cargar la aplicación.");
 });
 
 // Iniciar servidor
